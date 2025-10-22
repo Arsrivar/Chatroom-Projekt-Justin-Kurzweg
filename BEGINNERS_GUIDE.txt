@@ -1,0 +1,79 @@
+Nebula Chat — Simple Guide (For Non‑Tech)
+
+Important
+- This guide mentions features for a bigger version of the project.
+- The code here is a basic single‑room chat (no accounts/rooms/uploads yet). Use this as a reading aid and future roadmap.
+
+1) What This Is
+- A small website where people can chat in real time.
+- It runs on your Raspberry Pi and can be shared on the internet with a special link.
+
+2) What You Can Do
+- Join the main chat (#general) and talk with everyone.
+- Read #announcements (only the admin can post there).
+- Send private Direct Messages (DMs) to a specific person.
+- Send pictures (PNG/JPG) and PDF files.
+- Set a profile picture (avatar) that others see.
+- Delete your own messages (admin can delete any message).
+- See when others are typing and see unread counts on tabs.
+
+3) Words Explained
+- Website / app: A page you open in your browser (like Chrome or Safari).
+- Browser: The program you use to visit websites (Chrome, Edge, Safari, Firefox).
+- Link: The address you click or type to open a page (for example: http://localhost:3000 or an ngrok link).
+- Server: The “computer side” of the chat that sends and receives messages for everyone. Here it’s your Raspberry Pi.
+- Internet vs Home network: Internet is “out there” for everyone; home network is just inside your house. Ngrok makes a temporary public link to your chat.
+- Account: A name plus a password that identifies you. Here, accounts are very simple on purpose.
+- Username: The name you appear as in chat (e.g., Alex). It shows next to your messages.
+- Password: A secret you type when logging in. Don’t reuse a real-life password here.
+- Admin: Special user who can post in #announcements and delete any message.
+- Room: A shared chat space (we have #general and #announcements).
+- Direct Message (DM): A private chat between two people.
+- Upload: Sending a file (picture/PDF) into a chat so others can open it.
+- Avatar: Your profile picture shown next to your messages and name.
+- Tab: A button at the top that switches chat views (rooms and DMs).
+- Unread badge: A small red number on a tab showing you have new messages there.
+
+4) How To Use It (Step by Step)
+- Open the link to the chat (your helper will give you the address).
+- A “Sign in” window always shows:
+  - Guest (quickest): leave both fields empty and click Continue.
+  - Member: type a username and a new password to create it the first time; use the same later to log in again.
+  - Admin: type username “admin” and the special admin password your helper gives you.
+- To send a message: type in the box at the bottom and press Enter or click Send.
+- To attach a file: click Attach and choose a PNG/JPG or PDF.
+- To change your avatar: click “Change avatar” in the left sidebar and pick a PNG/JPG picture.
+- To delete your message: hover the message; click “delete” to remove it (admin can delete any message).
+- To open a DM: click a person’s name in the left list. A new @name tab appears; they see it too.
+- To close a DM: click the × on that DM’s tab.
+- To change your password (members only): click “Settings” in the sidebar.
+- To sign out: click “Sign out”.
+
+5) What Happens Behind the Scenes (In Plain Words)
+- Your browser connects to the Raspberry Pi. They keep a live connection open so messages show up instantly.
+- When you send a message, the server shares it with everyone in that room (or just the other person in a DM).
+- The chat remembers recent messages and reads them back when you arrive so you aren’t entering an empty page.
+- If the Raspberry Pi restarts, the messages are loaded again from simple files so you still see past chat.
+
+6) Sharing It With Others
+- If you were given a long ngrok link (looks like https://something.ngrok-free.app), that link works from anywhere on the internet.
+- Anyone with the link can visit the chat. Share only with people you trust.
+- The link can change when ngrok restarts; you may need to send the new link again.
+
+7) Safety and Privacy (Important)
+- This is for learning/demos. Do NOT store secrets or private info here.
+- Member passwords are stored in a simple text file on the Pi (not secure). Use a throwaway password.
+- Files you upload can be opened by anyone who has the link to the file.
+- The admin can delete messages. There is no blocking or reporting system.
+- Don’t upload illegal or unsafe content. Keep it friendly and appropriate.
+
+8) Fixing Common Problems
+- I can’t open the chat: The server might not be running, or the link is wrong. Ask your helper to start it again and share a fresh link.
+- It shows “username taken”: That name is already registered. Try adding a password to log in, or pick a different name.
+- It says “invalid credentials”: Wrong password for that username. Try again or use Guest.
+- Picture upload fails: Only PNG/JPG up to 4 MB for avatars, and PNG/JPG/PDF up to 8 MB in chat.
+- A PDF doesn’t open: Your browser may block new tabs/popups. Allow them for this site.
+
+9) What It’s Built With (Optional)
+- Node.js (JavaScript), Express (web server), Socket.IO (live messages), and simple files on disk to remember messages and settings.
+- This is enough for class demos and small groups.

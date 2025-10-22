@@ -1,0 +1,76 @@
+Nebula Chat — Architecture & Concepts (Updated)
+
+Note about scope
+- This document lists ideas for a bigger version of the app.
+- The code in this repo currently implements a single, simple global chat (users, typing, messages) without accounts, rooms, uploads, or persistence.
+
+Overview
+- Real-time chat built with Express + Socket.IO on Node.js.
+- Multi-room chat with Direct Messages, small-scale persistence (JSONL), uploads, reactions, edits, pins, and a modern client UI.
+- Auto‑guest sign‑in on first load; optional sign‑in later.
+
+Server (Node.js)
+- Express serves static files from ./public and applies middleware: helmet (CSP relaxed for Socket.IO), compression, CORS.
+- Session via express-session; cookie SameSite=Lax. In-memory session store (demo/dev).
+- Socket.IO wires bidirectional events and rooms.
+- Persistence on disk (JSONL files under ./data):
+  - Rooms: ./data/rooms/room-<name>.jsonl
+  - DMs:   ./data/dms/dm-<userA>__<userB>.jsonl
+  - Deleted ids: ./data/deleted-rooms.jsonl, ./data/deleted-dms.jsonl
+  - Edits: ./data/edited-rooms.jsonl, ./data/edited-dms.jsonl
+  - Pins:  ./data/pinned-rooms.jsonl
+  - Reactions: ./data/reactions-rooms.jsonl, ./data/reactions-dms.jsonl
+  - Avatars: ./data/avatars.txt (username:url)
+  - Users:   ./data/users.txt (username:password)
+  - Rooms list/meta: ./data/rooms-list.json, ./data/rooms-meta.json
+- Uploads stored in ./uploads (room files) and ./uploads/avatars (profile pictures) and served at /uploads/...
+- REST endpoints:
+  - Auth/session: POST /api/login, POST /api/logout, GET /api/me
+  - History: GET /api/history/room, GET /api/history/dm (paged by timestamp)
+  - Search: GET /api/search/rooms, GET /api/search/dm
+  - Export: GET /api/export/room, GET /api/export/dm
+  - Account: POST /api/account/password (members only)
+  - Profile: POST /api/profile/avatar (PNG/JPG)
+  - Upload: POST /api/upload (PNG/JPG/PDF up to 8MB)
+  - Rooms meta: GET/POST /api/rooms/meta (admin sets per-room topic)
+  - DMs list: GET /api/dm/list
+  - Health: GET /healthz, metadata: GET /version
+- Socket events (selection):
+  - User presence: users:list, system join/leave
+  - Rooms: room:join, message, typing/update, message:delete, message:edit, message:pin, message:react
+  - DMs: dm:open/leave, dm:message, dm:delete, dm:edit, dm:typing, dm:seen, dm:react
+
+Client (HTML/CSS/JS)
+- index.html: app shell with sidebar (brand, presence list, Rooms, Settings, Sign in/Sign out, avatar upload), chat area with tabs and composer.
+- styles.css: clean theme with dark mode; modals/lightbox overlays; badges; reaction chips.
+- app.js:
+  - Auto‑login as guest on load; no popup. “Sign in” opens the modal any time.
+  - Tabs for rooms (#general, #announcements, plus admin-created), and DM tabs (@name) that appear when opened.
+  - Infinite-scroll history (backfills older messages).
+  - Reactions (👍❤️😂😮😢); pins (admin); edits/deletes (own; admin overrides).
+  - Uploads via button or drag & drop (PNG/JPG/PDF).
+  - Avatars shown in presence list and messages; change from sidebar.
+  - Mentions highlighting; notification on mention (with user-controlled permission toggle).
+  - Search within current room or DM; export JSON for room or DM.
+  - DM typing indicators and read receipts (“Seen” marker on latest sent message up to peer’s seen timestamp).
+  - Unread badges on tabs and a document title counter; last-opened context (room/DM) is restored on reload.
+
+Data Model
+- Room message: { id, room, name, color, avatar, text?, attachment?, ts, edited?, pinned?, reactions, myReactions }
+- DM message: { id, dmKey, from, to, color, avatar, text?, attachment?, ts, edited?, reactions, myReactions }
+
+Security & Limits
+- Input sanitized and size-limited (text 2k, files up to 8MB; avatar 4MB).
+- Allowed upload types: image/png, image/jpeg, application/pdf.
+- Basic flood control: per-socket min interval (300ms).
+- Demo CORS (*); demo session store; OK for dev, review for prod.
+
+Operations
+- npm start serves on HOST:PORT (defaults 0.0.0.0:3000).
+- npm run up optionally starts ngrok and prints the public https URL (requires ngrok auth token).
+- Health: GET /healthz; SPA at /; Socket.IO at /socket.io.
+
+Extensibility
+- Swap JSONL for a DB (SQLite/Postgres) with indexes and pagination.
+- Add auth providers (OAuth, magic links), moderation tools, richer search, starred/pinned views.
+- Horizontal scale with a Socket.IO adapter (Redis, Postgres pub/sub).

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">💬 Chat</div>
+      <div class="presence">
+        <span id="me-name" class="me">Guest</span>
+        <span class="dot"></span>
+        <span id="online-count">0</span>
+      </div>
+      <button id="rename" class="link" title="Change name">Change name</button>
+    </header>
+
+    <main class="container">
+      <section id="messages" class="messages" aria-live="polite"></section>
+      <div id="typing" class="typing" hidden></div>
+      <form id="composer" class="composer" autocomplete="off">
+        <input id="message-input" class="input" type="text" placeholder="Type a message…" maxlength="2000" />
+        <button class="send" type="submit">Send</button>
+      </form>
+    </main>
+
+    <aside class="sidebar">
+      <h3>Online</h3>
+      <ul id="user-list" class="users"></ul>
+    </aside>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/app.js" type="module"></script>
+  </body>
+  </html>
