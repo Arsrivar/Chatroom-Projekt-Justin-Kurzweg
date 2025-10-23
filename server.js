@@ -85,7 +85,9 @@ io.on('connection', (socket) => {
     if (!u || !text) return ack && ack({ ok: false, error: 'empty' });
     const msg = { id: `${Date.now()}-${socket.id}`, name: u.name, color: u.color, text, ts: nowIso() };
     messages.push(msg); if (messages.length > MAX_MESSAGES) messages.shift();
-    io.emit('message:new', msg);
+    // We already add a local "optimistic" message on the client.
+    // Broadcast to others only to avoid showing duplicates for the sender.
+    socket.broadcast.emit('message:new', msg);
     ack && ack({ ok: true, id: msg.id });
   });
 
